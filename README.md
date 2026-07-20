@@ -12,7 +12,7 @@ The easiest way to create a DEB of your CustomTkinter project! You can create a 
 ## Install
 
 ```bash
-pip install "git+https://github.com/limafresh/CTkDeb.git#egg=CTkDeb[gui]"
+pip install "CTkDeb[gui] @ git+https://github.com/limafresh/CTkDeb.git"
 ```
 
 ## Run

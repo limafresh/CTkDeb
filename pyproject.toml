@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "CTkDeb"
+version = "0.1.0"
+requires-python = ">= 3.9"
+authors = [
+    { name = "limafresh", email = "173814432+limafresh@users.noreply.github.com" }
+]
+maintainers = [
+    { name = "limafresh", email = "173814432+limafresh@users.noreply.github.com" }
+]
+description = "A tool for easily packaging CustomTkinter projects into DEBs"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["gui", "customtkinter", "deb", "linux", "package"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3"
+]
+
+[project.optional-dependencies]
+gui = ["customtkinter"]
+
+[project.scripts]
+ctkdeb = "ctkdeb.main:cli"
+
+[project.gui-scripts]
+ctkdeb-gui = "ctkdeb.main:gui"
+
+[project.urls]
+Homepage = "https://github.com/limafresh/CTkDeb"
+Documentation = "https://github.com/limafresh/CTkDeb"
+Repository = "https://github.com/limafresh/CTkDeb.git"
+Issues = "https://github.com/limafresh/CTkDeb/issues"
+Changelog = "https://github.com/limafresh/CTkDeb/blob/main/CHANGELOG.md"

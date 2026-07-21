@@ -1,6 +1,6 @@
 def cli():
     import argparse
-    from ctkdeb.packager import Packager
+    from .packager import Packager
 
     parser = argparse.ArgumentParser(
         prog="CTkDeb",
@@ -22,7 +22,7 @@ def cli():
     packager.create_deb()
 
 def gui():
-    from ctkdeb.gui import CTkDeb
+    from .gui import CTkDeb
 
     app = CTkDeb()
     app.mainloop()

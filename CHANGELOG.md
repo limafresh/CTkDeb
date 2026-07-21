@@ -1,4 +1,14 @@
 # CTkDeb changelog
 
+## 0.2.0
+- Improved README.md
+- Keys with empty values ​​are no longer saved in the config
+- Added support for specifying desktop entry text instead of a path
+- Simplified import
+- Fixed bugs
+
+## 0.1.1
+- Fixed incorrect pip install command in README.md and added icon in pyproject.toml
+
 ## 0.1.0
 - Initial version

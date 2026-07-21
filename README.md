@@ -15,6 +15,8 @@ The easiest way to create a DEB of your CustomTkinter project! You can create a 
 pip install "CTkDeb[gui] @ git+https://github.com/limafresh/CTkDeb.git"
 ```
 
+Packaging requires the `dpkg-deb` tool (it is pre-installed on most Debian-like systems, so you probably won't need to install it separately).
+
 ## Run
 
 Run this in the project folder (relative to which the paths in the config are specified)
@@ -33,24 +35,34 @@ ctkdeb-gui
 ctkdeb config.json
 ```
 
-Optional arguments:
+View all arguments:
 
-- `--project-folder <path>`: if you run CTkDeb not from the project folder
-- `--desktop-entry <path>`: if you want to put a ready-made .desktop file in the package, and not one generated from a JSON config
+```
+ctkdeb --help
+```
 
 ## Python
 
 ```python
-from ctkdeb.packager import Packager
+from ctkdeb import Packager
 
 packager = Packager("config.json")
 packager.create_deb()
 ```
 
-Optional arguments:
+Arguments:
 
-- **project_folder**: *str*
-- **desktop_entry**: *str*
+| Argument | Type | Description |
+|-|-|-|
+| **json_path** | *str* | Path to the JSON config, required |
+| **project_folder** | *str* | Path to the project folder (if the command is not executed from it) |
+| **desktop_entry** | *str* | Path to the custom desktop entry (or its text) |
+
+## FAQ
+
+- Do I need to specify Tkinter and CustomTkinter as dependencies?
+
+No, CTkDeb has already taken care of that; just specify third-party dependencies, if any.
 
 ## Other
 

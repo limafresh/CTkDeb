@@ -39,8 +39,11 @@ class Packager:
             self.project_folder = Path.cwd()
 
         if desktop_entry:
-            with open(desktop_entry, "r", encoding="utf-8") as f:
-                self.desktop_entry = f.read()
+            if Path(desktop_entry).exists():
+                with open(desktop_entry, "r", encoding="utf-8") as f:
+                    self.desktop_entry = f.read()
+            else:
+                self.desktop_entry = desktop_entry
         else:
             self.desktop_entry = self._create_desktop_entry()
 
@@ -50,8 +53,8 @@ class Packager:
                 raise ValueError(f"Section '{section}' is missing")
 
             for field in fields:
-                if field not in self.json[section]:
-                    raise ValueError(f"Field '{section}.{field}' is missing")
+                if not self.json[section].get(field):
+                    raise ValueError(f"Field '{section}.{field}' is missing or empty")
 
     def _create_desktop_entry(self) -> str:
         basic_desktop_entry = f"""[Desktop Entry]
@@ -130,10 +133,10 @@ Terminal=false
         print("Install CustomTkinter and pip dependencies...")
 
         entry_point = Path(self.json["app"]["entryPoint"])
-        if entry_point.is_relative_to(self.project_folder):
+        if len(entry_point.parts) == 1:
             d = opt_dir / self.project_folder.name
         else:
-            d = entry_point.parent
+            d = opt_dir / self.project_folder.name / entry_point.parent
 
         dependencies = "customtkinter"
         if self.json["app"].get("pipDependencies"):

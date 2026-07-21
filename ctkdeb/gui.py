@@ -5,7 +5,7 @@ import sys
 import json
 import tempfile
 
-from ctkdeb import packager
+from . import packager
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -216,7 +216,9 @@ class CTkDeb(ctk.CTk):
         for section, entries in self.entries.items():
             config[section] = {}
             for field_id, entry in entries.items():
-                config[section][field_id] = entry.get()
+                value = entry.get()
+                if value:
+                    config[section][field_id] = value
 
         # Desktop entry
         for child in self.desktop_entry_card.winfo_children():
@@ -225,13 +227,15 @@ class CTkDeb(ctk.CTk):
 
             if col == 0 and isinstance(child, ctk.CTkEntry):
                 key = child.get()
+                if not key:
+                    continue
 
                 for other in self.desktop_entry_card.winfo_children():
                     other_info = other.grid_info()
                     if other_info["row"] == row and other_info["column"] == 1:
                         config["desktopEntry"][key] = other.get()
 
-        config["documentationFiles"] = [entry.get() for entry in self.doc_entries]
+        config["documentationFiles"] = [entry.get() for entry in self.doc_entries if entry.get()]
 
         if config_file:
             with open(config_file, "w", encoding="utf-8") as f:

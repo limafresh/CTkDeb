@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.3.0
+- Added output_folder argument
+
 ## 0.2.0
 - Improved README.md
 - Keys with empty values ​​are no longer saved in the config

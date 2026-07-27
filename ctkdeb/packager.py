@@ -27,6 +27,7 @@ class Packager:
         json_path: str,
         project_folder: str=None,
         desktop_entry: str=None,
+        output_folder: str=None
     ):
         with open(json_path, "r", encoding="utf-8") as f:
             self.json = json.load(f)
@@ -46,6 +47,11 @@ class Packager:
                 self.desktop_entry = desktop_entry
         else:
             self.desktop_entry = self._create_desktop_entry()
+
+        if output_folder:
+            self.output_folder = output_folder
+        else:
+            self.output_folder = Path.cwd()
 
     def _check_required_fields(self):
         for section, fields in REQUIRED_FIELDS.items():
@@ -179,7 +185,7 @@ Description: {self.json['deb'].get('description') or 'Packaged via CTkDeb'}
 
         print("Moving DEB and removing tmp dir...")
 
-        shutil.copy(Path(tmp_dir) / (self.json["app"]["name"] + ".deb"), Path.cwd())
+        shutil.copy(Path(tmp_dir) / (self.json["app"]["name"] + ".deb"), self.output_folder)
         shutil.rmtree(tmp_dir)
 
         print("DEB successfully created!")

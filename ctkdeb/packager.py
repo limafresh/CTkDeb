@@ -40,10 +40,13 @@ class Packager:
             self.project_folder = Path.cwd()
 
         if desktop_entry:
-            if Path(desktop_entry).exists():
-                with open(desktop_entry, "r", encoding="utf-8") as f:
-                    self.desktop_entry = f.read()
-            else:
+            try:
+                if Path(desktop_entry).exists():
+                    with open(desktop_entry, "r", encoding="utf-8") as f:
+                        self.desktop_entry = f.read()
+                else:
+                    self.desktop_entry = desktop_entry
+            except OSError:
                 self.desktop_entry = desktop_entry
         else:
             self.desktop_entry = self._create_desktop_entry()

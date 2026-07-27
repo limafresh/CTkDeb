@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.3.1
+- Fixed a bug where if you specify a long text as a desktop entry, Path(...).exists() does not hold
+
 ## 0.3.0
 - Added output_folder argument
 

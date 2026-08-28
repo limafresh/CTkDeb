@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.4.0
+- You can now specify a config dictionary as json_path
+
 ## 0.3.1
 - Fixed a bug where if you specify a long text as a desktop entry, Path(...).exists() does not hold
 

@@ -3,7 +3,6 @@ from tkinter import messagebox, filedialog, PhotoImage
 import os
 import sys
 import json
-import tempfile
 
 from . import packager
 
@@ -143,7 +142,7 @@ class CTkDeb(ctk.CTk):
         label_text: str,
         placeholder: str,
         row: int,
-        entry_type: bool=False
+        entry_type: bool = False
     ):
         if entry_type:
             label = ctk.CTkEntry(card, placeholder_text=label_text)
@@ -209,7 +208,7 @@ class CTkDeb(ctk.CTk):
 
         messagebox.showinfo("Config imported", "Config successfully imported")
 
-    def export_config(self, config_file: str=None):
+    def get_config_dict(self) -> dict:
         config = {}
 
         # Regular fields
@@ -237,10 +236,10 @@ class CTkDeb(ctk.CTk):
 
         config["documentationFiles"] = [entry.get() for entry in self.doc_entries if entry.get()]
 
-        if config_file:
-            with open(config_file, "w", encoding="utf-8") as f:
-                json.dump(config, f, ensure_ascii=False)
-            return
+        return config
+
+    def export_config(self):
+        config = self.get_config_dict()
 
         file_path = filedialog.asksaveasfilename(
             title="Export config",
@@ -274,13 +273,9 @@ class CTkDeb(ctk.CTk):
         self.doc_entries.clear()
 
     def create_deb(self):
-        tmp_json = tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=False)
-        self.export_config(config_file=tmp_json.name)
+        config = self.get_config_dict()
 
-        p = packager.Packager(tmp_json.name)
+        p = packager.Packager(config)
         p.create_deb()
-
-        tmp_json.close()
-        os.remove(tmp_json.name)
 
         messagebox.showinfo("DEB created", "DEB successfully created")

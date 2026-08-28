@@ -54,7 +54,7 @@ Arguments:
 
 | Argument | Type | Description |
 |-|-|-|
-| **json_path** | *str* | Path to the JSON config, required |
+| **json_path** | *str* or *dict* | Path to the JSON config (or its dict), required |
 | **project_folder** | *str* | Path to the project folder (if the command is not executed from it) |
 | **desktop_entry** | *str* | Path to the custom desktop entry (or its text) |
 | **output_folder** | *str* | Path to the output folder |

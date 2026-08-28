@@ -24,13 +24,18 @@ def _pip_install_to_dir(target_dir: Path, dependencies: str):
 class Packager:
     def __init__(
         self,
-        json_path: str,
-        project_folder: str=None,
-        desktop_entry: str=None,
-        output_folder: str=None
+        json_path: str | dict,
+        project_folder: str | None = None,
+        desktop_entry: str | None = None,
+        output_folder: str | None = None
     ):
-        with open(json_path, "r", encoding="utf-8") as f:
-            self.json = json.load(f)
+        if isinstance(json_path, str):
+            with open(json_path, "r", encoding="utf-8") as f:
+                self.json = json.load(f)
+        elif isinstance(json_path, dict):
+            self.json = json_path
+        else:
+            raise TypeError("'json_path' can only be str or dict.")
 
         self._check_required_fields()
 

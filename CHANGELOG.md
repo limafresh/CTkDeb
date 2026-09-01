@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.5.0
+- Added support for creating RPMs (for Fedora, Mageia and OpenMandriva)
+
 ## 0.4.0
 - You can now specify a config dictionary as json_path
 

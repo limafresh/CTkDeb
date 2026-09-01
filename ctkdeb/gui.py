@@ -8,6 +8,13 @@ from . import packager
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
+SUPPORTED = {
+    "DEB": "deb",
+    "RPM (Fedora)": "fedora",
+    "RPM (Mageia)": "mageia",
+    "RPM (OpenMandriva)": "openmandriva"
+}
+
 class CTkDeb(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -58,6 +65,24 @@ class CTkDeb(ctk.CTk):
                     {"id": "maintainer", "label": "Maintainer", "placeholder": "Ivan Ivanov <ivan_dev@example.com>"},
                     {"id": "description", "label": "Description", "placeholder": "A simple alarm clock app"},
                 ]
+            },
+            "rpm": {
+                "title": "RPM-specific settings",
+                "items": [
+                    {"id": "summary", "label": "Summary", "placeholder": "A simple alarm clock app"},
+                    {"id": "license", "label": "License", "placeholder": "MIT and GPL-3.0-or-later"},
+                    {"id": "url", "label": "URL", "placeholder": "https://myapp.com"},
+                    {"id": "description", "label": "Description",
+                     "placeholder": "MyApp is a simple alarm clock app with a user-friendly interface."}
+                ]
+            },
+            "rpmRequires": {
+                "title": "RPM requires",
+                "items": [
+                    {"id": "fedora", "label": "Fedora", "placeholder": "somelib potatolib"},
+                    {"id": "mageia", "label": "Mageia", "placeholder": "libsome potato-library"},
+                    {"id": "openmandriva", "label": "OpenMandriva", "placeholder": "some-lib potatolib3"}
+                ]
             }
         }
         self.entries = {}
@@ -88,17 +113,24 @@ class CTkDeb(ctk.CTk):
         footer = ctk.CTkFrame(self)
         footer.pack(padx=5, pady=5, side=ctk.BOTTOM, fill=ctk.X)
 
-        import_config_button = ctk.CTkButton(footer, text="Import config", command=self.import_config)
-        import_config_button.grid(row=0, column=0, padx=10, pady=10, sticky=ctk.EW)
+        config_frame = ctk.CTkFrame(footer)
+        config_frame.pack(side=ctk.LEFT, fill=ctk.X, expand=True)
 
-        export_config_button = ctk.CTkButton(footer, text="Export config", command=self.export_config)
-        export_config_button.grid(row=0, column=1, padx=10, pady=10, sticky=ctk.EW)
+        import_config_button = ctk.CTkButton(config_frame, text="Import config", command=self.import_config)
+        import_config_button.pack(padx=10, pady=10, fill=ctk.X, expand=True)
 
-        create_button = ctk.CTkButton(footer, text="CREATE", command=self.create_deb)
-        create_button.grid(row=0, column=2, padx=10, pady=10, sticky=ctk.EW)
+        export_config_button = ctk.CTkButton(config_frame, text="Export config", command=self.export_config)
+        export_config_button.pack(padx=10, pady=10, fill=ctk.X, expand=True)
 
-        for i in footer.winfo_children():
-            footer.columnconfigure(i, weight=1)
+        create_frame = ctk.CTkFrame(footer)
+        create_frame.pack(side=ctk.RIGHT, fill=ctk.X, expand=True)
+
+        self.create_optionmenu = ctk.CTkOptionMenu(create_frame, values=list(SUPPORTED.keys()),
+                                                   dynamic_resizing=False)
+        self.create_optionmenu.pack(padx=10, pady=10, fill=ctk.X, expand=True)
+
+        create_button = ctk.CTkButton(create_frame, text="CREATE", command=self.create_package)
+        create_button.pack(padx=10, pady=10, fill=ctk.X, expand=True)
 
     def create_cards(self):
         scrollable = ctk.CTkScrollableFrame(self, fg_color="transparent")
@@ -272,10 +304,17 @@ class CTkDeb(ctk.CTk):
             entry.destroy()
         self.doc_entries.clear()
 
-    def create_deb(self):
+    def create_package(self):
+        value = self.create_optionmenu.get()
+        value_name = SUPPORTED[value]
+
         config = self.get_config_dict()
 
         p = packager.Packager(config)
-        p.create_deb()
 
-        messagebox.showinfo("DEB created", "DEB successfully created")
+        if value_name == "deb":
+            p.create_deb()
+        elif value_name in packager.RPM_REQUIRES.keys():
+            p.create_rpm(value_name)
+
+        messagebox.showinfo(f"{value} created", f"{value} successfully created")

@@ -7,7 +7,7 @@
     <img src="https://raw.githubusercontent.com/limafresh/CTkDeb/main/ctkdeb/icon.png" width="100" height="100">
 </p>
 
-The easiest way to create a DEB of your CustomTkinter project! You can create a small DEB without deep packaging experience.
+The easiest way to create a DEB or RPM package of your CustomTkinter project! You can create a small DEB or RPM package without deep packaging experience.
 
 ## Install
 
@@ -15,7 +15,8 @@ The easiest way to create a DEB of your CustomTkinter project! You can create a 
 pip install CTkDeb[gui]
 ```
 
-Packaging requires the `dpkg-deb` tool (it is pre-installed on most Debian-like systems, so you probably won't need to install it separately).
+- Creating **DEB** packages requires the `dpkg-deb` tool (pre-installed on most Debian-like systems, probably does not need to be installed separately).
+- Creating **RPM** packages requires the `rpmbuild` tool.
 
 ## Run
 
@@ -32,7 +33,7 @@ ctkdeb-gui
 ## CLI
 
 ```
-ctkdeb config.json
+ctkdeb config.json --create deb
 ```
 
 View all arguments:
@@ -48,6 +49,15 @@ from ctkdeb import Packager
 
 packager = Packager("config.json")
 packager.create_deb()
+# or
+packager.create_rpm("fedora")
+```
+
+View all supported RPM distros:
+
+```python
+from ctkdeb import show_supported_rpm_distros
+show_supported_rpm_distros()
 ```
 
 Arguments:
@@ -64,6 +74,10 @@ Arguments:
 - Do I need to specify Tkinter and CustomTkinter as dependencies?
 
 No, CTkDeb has already taken care of that; just specify third-party dependencies, if any.
+
+- What about dependencies?
+
+Pip dependencies are recommended only if they are written in pure Python (e.g., CTkMenuBar). If not, it's better to search for the required dependency in the distribution repositories and specify it as a DEB or RPM dependency. For example, for Pillow, specify `python3-pil` for DEB or `python3-pillow` for RPM (Fedora/Mageia) instead of `pillow` in the Pip dependencies line.
 
 ## Other
 

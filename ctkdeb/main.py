@@ -1,12 +1,15 @@
+from .packager import RPM_REQUIRES
+
 def cli():
     import argparse
     from .packager import Packager
 
     parser = argparse.ArgumentParser(
         prog="CTkDeb",
-        description="A tool for easily packaging CustomTkinter projects into DEBs"
+        description="A tool for easily packaging CustomTkinter projects into DEB and RPM"
     )
     parser.add_argument("json", type=str, help="Path to the JSON config")
+    parser.add_argument("-c", "--create", required=True, choices=["deb"] + list(RPM_REQUIRES.keys()))
     parser.add_argument("-pf", "--project-folder", type=str,
                         help="Path to the project folder (if the command is not executed from it)")
     parser.add_argument("-d", "--desktop-entry", type=str,
@@ -21,13 +24,22 @@ def cli():
         desktop_entry=args.desktop_entry,
         output_folder=args.output_folder
     )
-    packager.create_deb()
+
+    if args.create == "deb":
+        packager.create_deb()
+    elif args.create in RPM_REQUIRES.keys():
+        packager.create_rpm(args.create)
 
 def gui():
     from .gui import CTkDeb
 
     app = CTkDeb()
     app.mainloop()
+
+def show_supported_rpm_distros():
+    print("Supported RPM distros:")
+    for distro in RPM_REQUIRES.keys():
+        print(f"- '{distro}'")
 
 if __name__ == "__main__":
     cli()

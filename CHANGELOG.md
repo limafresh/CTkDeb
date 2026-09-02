@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.5.1
+- Slightly simplified _create_desktop_entry function
+
 ## 0.5.0
 - Added support for creating RPMs (for Fedora, Mageia and OpenMandriva)
 

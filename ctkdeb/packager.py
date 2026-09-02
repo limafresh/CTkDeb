@@ -78,33 +78,21 @@ class Packager:
                     raise ValueError(f"Field '{section}.{field}' is missing or empty")
 
     def _create_desktop_entry(self) -> str:
-        basic_desktop_entry = f"""[Desktop Entry]
-Type=Application
-Version=1.0
-Name={self.json['desktopEntry']['Name']}
-Exec=python3 /opt/{self.project_folder.name}/{self.json['app']['entryPoint']} %f
-Icon={self.json['app']['name']}
-Terminal=false
-"""
+        desktop_entry_dict = {
+            "[Desktop Entry]": None,
+            "Type": "Application",
+            "Version": "1.0",
+            "Name": self.json["desktopEntry"]["Name"],
+            "Exec": f"python3 /opt/{self.project_folder.name}/{self.json['app']['entryPoint']} %f",
+            "Icon": self.json["app"]["name"],
+            "Terminal": "false"
+        }
 
-        # Converting basic desktop entry to dict
-        lines = basic_desktop_entry.splitlines()
-
-        entry_dict = {}
-        for line in lines:
-            if "=" in line:
-                key, value = line.split("=", 1)
-                entry_dict[key] = value
-            else:
-                entry_dict[line] = None # for title
-
-        # Update/add fields from json
         for key, value in self.json["desktopEntry"].items():
-            entry_dict[key] = value
+            desktop_entry_dict[key] = value
 
-        # Convert back
         result_lines = []
-        for key, value in entry_dict.items():
+        for key, value in desktop_entry_dict.items():
             if value is None:
                 result_lines.append(key) # for title
             else:

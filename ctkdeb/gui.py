@@ -3,6 +3,7 @@ from tkinter import messagebox, filedialog, PhotoImage
 import os
 import sys
 import json
+from threading import Thread
 
 from . import packager
 
@@ -129,8 +130,8 @@ class CTkDeb(ctk.CTk):
                                                    dynamic_resizing=False)
         self.create_optionmenu.pack(padx=10, pady=10, fill=ctk.X, expand=True)
 
-        create_button = ctk.CTkButton(create_frame, text="CREATE", command=self.create_package)
-        create_button.pack(padx=10, pady=10, fill=ctk.X, expand=True)
+        self.create_button = ctk.CTkButton(create_frame, text="CREATE", command=self.on_create_clicked)
+        self.create_button.pack(padx=10, pady=10, fill=ctk.X, expand=True)
 
     def create_cards(self):
         scrollable = ctk.CTkScrollableFrame(self, fg_color="transparent")
@@ -304,6 +305,16 @@ class CTkDeb(ctk.CTk):
             entry.destroy()
         self.doc_entries.clear()
 
+    def on_create_clicked(self):
+        self.progressbar = ctk.CTkProgressBar(self, mode="determinate")
+        self.progressbar.pack(padx=5, pady=5, fill=ctk.X)
+        self.progressbar.start()
+
+        self.create_button.configure(state="disabled")
+
+        thread = Thread(target=self.create_package)
+        thread.start()
+
     def create_package(self):
         value = self.create_optionmenu.get()
         value_name = SUPPORTED[value]
@@ -316,5 +327,13 @@ class CTkDeb(ctk.CTk):
             p.create_deb()
         elif value_name in packager.RPM_REQUIRES.keys():
             p.create_rpm(value_name)
+
+        self.after(0, self.on_package_created, value)
+
+    def on_package_created(self, value):
+        self.progressbar.stop()
+        self.progressbar.destroy()
+
+        self.create_button.configure(state="normal")
 
         messagebox.showinfo(f"{value} created", f"{value} successfully created")

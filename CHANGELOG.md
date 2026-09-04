@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.6.0
+- Added CTkProgressBar
+
 ## 0.5.1
 - Slightly simplified _create_desktop_entry function
 

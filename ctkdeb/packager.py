@@ -112,7 +112,10 @@ class Packager:
         print("Copying app files...")
 
         opt_dir = package_dir / "opt"
-        shutil.copytree(self.project_folder, opt_dir / self.project_folder.name)
+        copy_path = opt_dir / self.project_folder.name
+
+        shutil.copytree(self.project_folder, copy_path)
+        self.delete_excluded_items(copy_path)
 
         print("Copying the icon...")
 
@@ -249,7 +252,10 @@ if docs_files_names else ''}"""
 
         print("Copying app files...")
 
-        shutil.copytree(self.project_folder, package_dir / self.project_folder.name)
+        copy_path = package_dir / self.project_folder.name
+
+        shutil.copytree(self.project_folder, copy_path)
+        self.delete_excluded_items(copy_path)
 
         print("Copying the icon...")
 
@@ -306,3 +312,16 @@ if docs_files_names else ''}"""
             d = app_files_dir_parent / self.project_folder.name / entry_point.parent
 
         return d
+
+    def delete_excluded_items(self, path: Path):
+        if not self.json.get("excluded"):
+            return
+
+        for name in self.json["excluded"]:
+            target = path / name
+
+            if target.exists():
+                if target.is_file():
+                    target.unlink()
+                elif target.is_dir():
+                    shutil.rmtree(target)

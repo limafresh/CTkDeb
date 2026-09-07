@@ -58,6 +58,12 @@ class CTkDeb(ctk.CTk):
                     {"type": "button", "text": "Add file", "command": self.add_new_doc_file}
                 ]
             },
+            "excluded": {
+                "title": "Excluded files and folders",
+                "items": [
+                    {"type": "button", "text": "Add file or folder", "command": self.add_new_excluded}
+                ]
+            },
             "deb": {
                 "title": "DEB-specific settings",
                 "items": [
@@ -89,6 +95,7 @@ class CTkDeb(ctk.CTk):
         self.entries = {}
         self.desktop_entry_entries = {}
         self.doc_entries = []
+        self.excluded_entries = []
 
         self.build_interface()
 
@@ -149,6 +156,8 @@ class CTkDeb(ctk.CTk):
                 self.desktop_entry_card = card
             elif section == "documentationFiles":
                 self.docs_card = card
+            elif section == "excluded":
+                self.excluded_card = card
 
             title = ctk.CTkLabel(card, text=items["title"], font=self.title_font)
             title.grid(row=0, column=0, padx=10, pady=10, columnspan=2, sticky=ctk.W)
@@ -199,10 +208,16 @@ class CTkDeb(ctk.CTk):
         return entry
 
     def add_new_doc_file(self):
-        next_row = self.docs_card.grid_size()[1]
+        self.add_new_resource(self.docs_card, "File:", "LICENSE", self.doc_entries)
 
-        entry = self.add_labeled_entry(self.docs_card, "File:", "LICENSE", next_row)
-        self.doc_entries.append(entry)
+    def add_new_excluded(self):
+        self.add_new_resource(self.excluded_card, "Item:", ".git", self.excluded_entries)
+
+    def add_new_resource(self, card: ctk.CTkFrame, label: str, placeholder: str, entries_list: list):
+        next_row = card.grid_size()[1]
+
+        entry = self.add_labeled_entry(card, label, placeholder, next_row)
+        entries_list.append(entry)
 
     def import_config(self):
         file_path = filedialog.askopenfilename(
@@ -239,6 +254,12 @@ class CTkDeb(ctk.CTk):
             self.add_new_doc_file()
             self.entry_set_text(self.doc_entries[-1], value)
 
+        # Excluded files and folders
+        if config.get("excluded"):
+            for value in config["excluded"]:
+                self.add_new_excluded()
+                self.entry_set_text(self.excluded_entries[-1], value)
+
         messagebox.showinfo("Config imported", "Config successfully imported")
 
     def get_config_dict(self) -> dict:
@@ -268,6 +289,7 @@ class CTkDeb(ctk.CTk):
                         config["desktopEntry"][key] = other.get()
 
         config["documentationFiles"] = [entry.get() for entry in self.doc_entries if entry.get()]
+        config["excluded"] = [entry.get() for entry in self.excluded_entries if entry.get()]
 
         return config
 

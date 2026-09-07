@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.7.0
+- Added support for adding excluded files and folders
+
 ## 0.6.0
 - Added CTkProgressBar
 

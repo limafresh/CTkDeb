@@ -115,7 +115,7 @@ class Packager:
         copy_path = opt_dir / self.project_folder.name
 
         shutil.copytree(self.project_folder, copy_path)
-        self.delete_excluded_items(copy_path)
+        self._delete_excluded_items(copy_path)
 
         print("Copying the icon...")
 
@@ -134,11 +134,12 @@ class Packager:
 
         print("Copying docs...")
 
-        app_doc_dir = share_dir / "doc" / self.json["app"]["name"]
-        app_doc_dir.mkdir(parents=True)
+        if self.json["documentationFiles"]:
+            app_doc_dir = share_dir / "doc" / self.json["app"]["name"]
+            app_doc_dir.mkdir(parents=True)
 
-        for f in self.json["documentationFiles"]:
-            shutil.copy(self.project_folder / f, app_doc_dir)
+            for f in self.json["documentationFiles"]:
+                shutil.copy(self.project_folder / f, app_doc_dir)
 
         print("Install CustomTkinter and pip dependencies...")
 
@@ -255,7 +256,7 @@ if docs_files_names else ''}"""
         copy_path = package_dir / self.project_folder.name
 
         shutil.copytree(self.project_folder, copy_path)
-        self.delete_excluded_items(copy_path)
+        self._delete_excluded_items(copy_path)
 
         print("Copying the icon...")
 
@@ -313,7 +314,7 @@ if docs_files_names else ''}"""
 
         return d
 
-    def delete_excluded_items(self, path: Path):
+    def _delete_excluded_items(self, path: Path):
         if not self.json.get("excluded"):
             return
 

@@ -1,5 +1,8 @@
 # CTkDeb changelog
 
+## 0.8.0
+- If there are no documentation files, the app folder in /usr/share/doc/ in DEB is not created
+
 ## 0.7.0
 - Added support for adding excluded files and folders
 

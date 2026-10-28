@@ -11,15 +11,25 @@ REQUIRED_FIELDS = {
 }
 
 RPM_REQUIRES = {
-    "fedora": "python3 python3-tkinter",
-    "mageia": "python3 tkinter3",
-    "openmandriva": "python python-customtkinter"
+    "fedora": {
+        "base": "python3",
+        "Tkinter": "python3-tkinter",
+        "CustomTkinter": "python3-tkinter"
+    },
+    "mageia": {
+        "base": "python3",
+        "Tkinter": "tkinter3",
+        "CustomTkinter": "tkinter3"
+    },
+    "openmandriva": {
+        "base": "python",
+        "Tkinter": "tkinter",
+        "CustomTkinter": "python-customtkinter"
+    }
 }
 
-def _pip_install_to_dir(target_dir: Path, dependencies: str):
-    packages = dependencies.split()
-
-    cmd = ["pip", "install", "--target", str(target_dir)] + packages
+def _pip_install_to_dir(target_dir: Path, dependencies: list):
+    cmd = ["pip", "install", "--target", str(target_dir)] + dependencies
     subprocess.run(cmd)
 
     # Clean garbage
@@ -67,6 +77,11 @@ class Packager:
             self.output_folder = output_folder
         else:
             self.output_folder = Path.cwd()
+
+        if self.json["app"].get("projectType"):
+            self.project_type = self.json["app"]["projectType"]
+        else:
+            self.project_type = "CustomTkinter"
 
     def _check_required_fields(self):
         for section, fields in REQUIRED_FIELDS.items():
@@ -143,11 +158,16 @@ class Packager:
 
         print("Install CustomTkinter and pip dependencies...")
 
-        dependencies = "customtkinter"
-        if self.json["app"].get("pipDependencies"):
-            dependencies += " " + self.json["app"]["pipDependencies"]
+        dependencies = []
 
-        _pip_install_to_dir(self._pip_target_dir(opt_dir), dependencies)
+        if self.project_type == "CustomTkinter":
+            dependencies.append("customtkinter")
+
+        if self.json["app"].get("pipDependencies"):
+            dependencies.extend(self.json["app"]["pipDependencies"].split())
+
+        if dependencies:
+            _pip_install_to_dir(self._pip_target_dir(opt_dir), dependencies)
 
         print("Estimating package dir size...")
 
@@ -159,7 +179,9 @@ class Packager:
         debian_dir = package_dir / "DEBIAN"
         debian_dir.mkdir()
 
-        depends = "python3, python3-tk"
+        depends = "python3"
+        if self.project_type in ["Tkinter", "CustomTkinter"]:
+            depends += ", python3-tk"
         if self.json["deb"].get("depends"):
             depends += ", " + self.json["deb"]["depends"]
 
@@ -201,7 +223,9 @@ Description: {self.json['deb'].get('description') or 'Packaged via CTkDeb'}
 
         print("Creating SPEC file...")
 
-        requires = RPM_REQUIRES[distribution]
+        requires = RPM_REQUIRES[distribution]["base"]
+        if self.project_type != "Other GUI":
+            requires += " " + RPM_REQUIRES[distribution][self.project_type]
         if self.json["rpmRequires"].get(distribution):
             requires += " " + self.json["rpmRequires"][distribution]
 
@@ -271,14 +295,14 @@ if docs_files_names else ''}"""
 
         dependencies = []
 
-        if distribution != "openmandriva":
+        if self.project_type == "CustomTkinter" and distribution != "openmandriva":
             dependencies.append("customtkinter")
 
         if self.json["app"].get("pipDependencies"):
             dependencies.extend(self.json["app"]["pipDependencies"].split())
 
         if dependencies:
-            _pip_install_to_dir(self._pip_target_dir(package_dir), " ".join(dependencies))
+            _pip_install_to_dir(self._pip_target_dir(package_dir), dependencies)
 
         print("Creating tarball...")
 

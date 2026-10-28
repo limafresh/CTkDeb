@@ -37,6 +37,7 @@ class CTkDeb(ctk.CTk):
                 "title": "App",
                 "items": [
                     {"id": "name", "label": "Name", "placeholder": "myapp"},
+                    {"id": "projectType", "label": "Project type", "placeholder": ["CustomTkinter", "Tkinter", "Other GUI"]},
                     {"id": "version", "label": "Version", "placeholder": "0.16.2"},
                     {"id": "entryPoint", "label": "Entry point", "placeholder": "main.py"},
                     {"id": "icon", "label": "Icon", "placeholder": "assets/icon.png"},
@@ -182,7 +183,7 @@ class CTkDeb(ctk.CTk):
         self,
         card: ctk.CTkFrame,
         label_text: str,
-        placeholder: str,
+        placeholder: str | list,
         row: int,
         entry_type: bool = False
     ):
@@ -192,7 +193,10 @@ class CTkDeb(ctk.CTk):
             label = ctk.CTkLabel(card, text=label_text)
         label.grid(row=row, column=0, padx=10, pady=(0, 10), sticky=ctk.W)
 
-        entry = ctk.CTkEntry(card, placeholder_text=placeholder)
+        if isinstance(placeholder, str):
+            entry = ctk.CTkEntry(card, placeholder_text=placeholder)
+        elif isinstance(placeholder, list):
+            entry = ctk.CTkComboBox(card, values=placeholder)
         entry.grid(row=row, column=1, padx=10, pady=(0, 10), sticky=ctk.EW)
 
         if entry_type:
@@ -307,9 +311,12 @@ class CTkDeb(ctk.CTk):
                 json.dump(config, f, indent="\t", ensure_ascii=False)
                 messagebox.showinfo("Config exported", "Config successfully exported")
 
-    def entry_set_text(self, entry: ctk.CTkEntry, value: str):
-        entry.delete(0, ctk.END)
-        entry.insert(0, value)
+    def entry_set_text(self, entry: ctk.CTkEntry | ctk.CTkComboBox, value: str):
+        if isinstance(entry, ctk.CTkEntry):
+            entry.delete(0, ctk.END)
+            entry.insert(0, value)
+        elif isinstance(entry, ctk.CTkComboBox):
+            entry.set(value)
 
     def destroy_user_widgets(self):
         # Desktop entry

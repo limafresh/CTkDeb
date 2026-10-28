@@ -7,7 +7,7 @@
     <img src="https://raw.githubusercontent.com/limafresh/CTkDeb/main/ctkdeb/icon.png" width="100" height="100">
 </p>
 
-The easiest way to create a DEB or RPM package of your CustomTkinter project! You can create a small DEB or RPM package without deep packaging experience.
+A CustomTkinter app for easily packaging CustomTkinter, Tkinter, and other Python GUI projects into DEB and RPM packages for Linux. It has GUI, CLI, and Python modes. You can create a small DEB or RPM package without deep packaging experience.
 
 ## Install
 
@@ -75,7 +75,11 @@ Arguments:
 
 No, CTkDeb has already taken care of that; just specify third-party dependencies, if any.
 
-- What about dependencies?
+- Can I use CTkDeb to package PyQt projects?
+
+Yes, but you will have to find the correct names for the PyQt packages yourself and specify them in the dependencies. In `Project type` select `Other GUI`.
+
+- What about pip and DEB/RPM dependencies?
 
 Pip dependencies are recommended only if they are written in pure Python (e.g., CTkMenuBar). If not, it's better to search for the required dependency in the distribution repositories and specify it as a DEB or RPM dependency. For example, for Pillow, specify `python3-pil` for DEB or `python3-pillow` for RPM (Fedora/Mageia) instead of `pillow` in the Pip dependencies line.
 

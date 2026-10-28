@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "CTkDeb"
-version = "0.8.0"
+version = "0.9.0"
 requires-python = ">= 3.9"
 authors = [{ name = "limafresh" }]
 maintainers = [{ name = "limafresh" }]
-description = "A tool for easily packaging CustomTkinter projects into DEB and RPM"
+description = "A tool for easily packaging CustomTkinter, Tkinter, and other Python GUI projects into DEB and RPM packages"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

@@ -98,7 +98,7 @@ class Packager:
             "Type": "Application",
             "Version": "1.0",
             "Name": self.json["desktopEntry"]["Name"],
-            "Exec": f"python3 /opt/{self.project_folder.name}/{self.json['app']['entryPoint']} %f",
+            "Exec": f"{self.json['app']['name']} %f",
             "Icon": self.json["app"]["name"],
             "Terminal": "false"
         }
@@ -121,8 +121,11 @@ class Packager:
         package_dir = Path(tmp_dir) / self.json["app"]["name"]
         package_dir.mkdir()
 
-        share_dir = package_dir / "usr" / "share"
-        share_dir.mkdir(parents=True)
+        usr_dir = package_dir / "usr"
+        usr_dir.mkdir()
+
+        share_dir = usr_dir / "share"
+        share_dir.mkdir()
 
         print("Copying app files...")
 
@@ -138,6 +141,18 @@ class Packager:
         apps_icons_dir.mkdir(parents=True)
 
         shutil.copy(self.project_folder / self.json["app"]["icon"], apps_icons_dir / self._new_icon_name())
+
+        print("Creating the wrapper script...")
+
+        bin_dir = usr_dir / "bin"
+        bin_dir.mkdir()
+
+        script_path = bin_dir / self.json["app"]["name"]
+
+        with open(script_path, "w", encoding="utf-8") as f:
+            f.write(self._wrapper_script())
+
+        script_path.chmod(script_path.stat().st_mode | 0o111)
 
         print("Creating the desktop entry...")
 
@@ -248,6 +263,9 @@ Requires: {requires}
 %setup -q -n {self.json['app']['name']}
 
 %install
+mkdir -p %{{buildroot}}/usr/bin
+cp -r {self.json['app']['name']} %{{buildroot}}/usr/bin
+
 mkdir -p %{{buildroot}}/opt
 cp -r {self.project_folder.name} %{{buildroot}}/opt
 
@@ -261,6 +279,7 @@ mkdir -p %{{buildroot}}/usr/share/doc/{self.json['app']['name']}
 cp {' '.join(docs_files_names)} %{{buildroot}}/usr/share/doc/{self.json['app']['name']}
 """ if docs_files_names else ''}
 %files
+/usr/bin/{self.json['app']['name']}
 /opt/{self.project_folder.name}
 /usr/share/icons/hicolor/{self.json['app']['iconSize']}/apps/{self._new_icon_name()}
 /usr/share/applications/{self.json['app']['name']}.desktop
@@ -269,6 +288,15 @@ if docs_files_names else ''}"""
 
         with open(package_dir / (self.json["app"]["name"] + ".spec"), "w", encoding="utf-8") as f:
             f.write(spec)
+
+        print("Creating the wrapper script...")
+
+        script_path = package_dir / self.json["app"]["name"]
+
+        with open(script_path, "w", encoding="utf-8") as f:
+            f.write(self._wrapper_script())
+
+        script_path.chmod(script_path.stat().st_mode | 0o111)
 
         print("Creating the desktop entry...")
 
@@ -327,6 +355,13 @@ if docs_files_names else ''}"""
     def _new_icon_name(self) -> str:
         icon_path = Path(self.json["app"]["icon"])
         return self.json["app"]["name"] + icon_path.suffix
+
+    def _wrapper_script(self) -> str:
+        wrapper_script = f"""#!/usr/bin/env bash
+python3 /opt/{self.project_folder.name}/{self.json['app']['entryPoint']} "$@"
+"""
+
+        return wrapper_script
 
     def _pip_target_dir(self, app_files_dir_parent: Path) -> Path:
         entry_point = Path(self.json["app"]["entryPoint"])

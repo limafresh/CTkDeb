@@ -69,20 +69,34 @@ Arguments:
 | **desktop_entry** | *str* | Path to the custom desktop entry (or its text) |
 | **output_folder** | *str* | Path to the output folder |
 
+## Good to know
+
+> [!TIP]
+> Specifying pip dependencies is only recommended if they are written in pure Python (e.g. CTkMenuBar). If not, it's better to search for the required dependency in the distribution repositories and specify it as a DEB or RPM dependency. For example, for Pillow, specify `python3-pil` for DEB or `python3-pillow` for RPM (Fedora/Mageia) instead of `pillow` in the "Pip dependencies" line.
+
 ## FAQ
 
-- Do I need to specify Tkinter and CustomTkinter as dependencies?
+<details>
+    <summary><b>Do I need to specify Python and GUI toolkits as dependencies?</b></summary>
+    <br>
 
-No, CTkDeb has already taken care of that; just specify third-party dependencies, if any.
+In any case, you don't need to specify Python; the tool will do it for you. If your project's GUI toolkit is among the available options in the "Project type" field, and you select that option, you do not need to specify the GUI toolkit either.
+</details>
 
-- Can I use CTkDeb to package PyQt projects?
+<details>
+    <summary><b>Can I use CTkDeb to package PyQt projects?</b></summary>
+    <br>
+    
+Yes, but you will have to find the correct names for the PyQt packages yourself and specify them in the dependencies. In "Project type" select "Other GUI".
+</details>
 
-Yes, but you will have to find the correct names for the PyQt packages yourself and specify them in the dependencies. In `Project type` select `Other GUI`.
-
-- What about pip and DEB/RPM dependencies?
-
-Pip dependencies are recommended only if they are written in pure Python (e.g., CTkMenuBar). If not, it's better to search for the required dependency in the distribution repositories and specify it as a DEB or RPM dependency. For example, for Pillow, specify `python3-pil` for DEB or `python3-pillow` for RPM (Fedora/Mageia) instead of `pillow` in the Pip dependencies line.
+<details>
+    <summary><b>Can the tool be run on Windows?</b></summary>
+    <br>
+    
+You can run it (for example, to create a config), but you cannot create packages on Windows.
+</details>
 
 ## Other
 
-App icon: Claude Sonnet 5.
+App icon: Claude Sonnet 5 (with modifications by Claude Sonnet 5.5).

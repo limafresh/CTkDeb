@@ -1,5 +1,10 @@
 # CTkDeb changelog
 
+## 0.10.0
+- Improved README.md
+- Updated icon
+- Packages now include wrapper scripts for terminal execution
+
 ## 0.9.0
 - Added support for packaging not only CustomTkinter projects, but also Tkinter projects and those using other GUI toolkits (in the latter case, you will need to specify them manually in the dependencies)
 
